@@ -1,8 +1,18 @@
-
+import Link from "next/link";
 export default function Buy({searchParams}) {
   return (
     <main>
-      <h2>Buy</h2>
+      <Link
+            href={{
+              pathname:"/buy/connect",
+              query:{
+                search:searchParams.search
+              }
+            }}
+            className="border rounded px-3 py-2 text-purple"
+          >
+            Buy
+          </Link>
     </main>
   );
 }
