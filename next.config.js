@@ -15,8 +15,14 @@ const nextConfig = {
                 basePath:false
             },
             {
-                source:'/redirectWallet',
+                source:'/redirectWalletTestnet',
                 destination:'https://testnet.mynearwallet.com/recover-private-key',
+                permanent:false,
+                basePath:false
+            },
+            {
+                source:'/redirectWalletMainnet',
+                destination:'https://app.mynearwallet.com/recover-private-key',
                 permanent:false,
                 basePath:false
             },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from "react";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -8,6 +9,7 @@ import { KeyPairEd25519 } from "near-api-js/lib/utils";
 import "@near-wallet-selector/modal-ui/styles.css";
 
 export default function Connect({ searchParams }) {
+  const router=useRouter()
   const [selectorInstance, setSelectorInstance] = useState();
   const [wallet, setWallet] = useState("");
   const [accountId, setAccountId] = useState("");
@@ -18,10 +20,12 @@ export default function Connect({ searchParams }) {
   useEffect(() => {
     const hash = searchParams.transactionHashes;
     if (searchParams.transactionHashes) {
+      localStorage.setItem('txnHash',hash)
+      localStorage.setItem('search',searchParams.search)
       console.log("SUCCESS");
       setMsg("Success with txn hash:" + hash);
+      router.push('/buy/final')
     }
-    
   }, []);
 
   useEffect(() => {
@@ -56,7 +60,7 @@ export default function Connect({ searchParams }) {
       });
 
       modal = setupModal(selector, {
-        contractId: "mainnet",
+        contractId: "near",
       });
     } else {
       selector = await setupWalletSelector({
@@ -81,7 +85,7 @@ export default function Connect({ searchParams }) {
   const confirmBuy = async () => {
     const keyPair = KeyPairEd25519.fromRandom();
     const publicKey = keyPair.publicKey.toString();
-    localStorage.setItem('secretKey',keyPair.secretKey.toString());
+    localStorage.setItem("secretKey", keyPair.secretKey.toString());
     await wallet.signAndSendTransaction({
       actions: [
         {
@@ -102,19 +106,23 @@ export default function Connect({ searchParams }) {
 
   return (
     <main>
-      {(JSON.parse(localStorage.getItem("near_app_wallet_auth_key")))? (
+      {JSON.parse(localStorage.getItem("near_app_wallet_auth_key")) ? (
         <div>
           <button
             onClick={disconnect}
             className="border rounded px-3 py-2 text-purple"
           >
-            {(JSON.parse(localStorage.getItem("near_app_wallet_auth_key"))).accountId} (click to change)
+            {
+              JSON.parse(localStorage.getItem("near_app_wallet_auth_key"))
+                .accountId
+            }{" "}
+            (click to change)
           </button>
           <button
             onClick={confirmBuy}
             className="border rounded px-3 py-2 text-purple"
           >
-            Confirm Buy
+            Confirm
           </button>
         </div>
       ) : (
@@ -125,17 +133,14 @@ export default function Connect({ searchParams }) {
           Connect Wallet
         </button>
       )}
-      {msg ? (
-        <div>
-          <h2 className="text-green">{msg}</h2>
-          <h2 className="text-purple">{secretKey}</h2>
-        </div>
-      ) : (
-        <h2 className="py-5 text-red">
-          NOTE: Press connect. Login. When redirected back press connect again
-          to finalise connection.
-        </h2>
-      )}
+
+      <h2 className="py-5 text-red">
+        NOTE:<br />
+        1. Press connect.<br />
+        2. Login.<br />
+        3. When redirected back to this page, press connect again to
+        finalise connection.<br />
+      </h2>
     </main>
   );
 }

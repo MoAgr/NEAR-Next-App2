@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Link from "next/link";
 
 export default function SearchBar() {
@@ -16,6 +16,9 @@ export default function SearchBar() {
     "https://archival-rpc.mainnet.near.org"
   );
 
+  useEffect(()=>{
+    localStorage.clear()
+  },[])
   const handleSearch = async (event) => {
     let succeeded = true;
     if (event.key === "Enter") {
@@ -67,7 +70,7 @@ export default function SearchBar() {
           </p>
           <Link
             href={{
-              pathname:"/buy",
+              pathname:"/buy/connect",
               query:{
                 search:finalSearchQuery
               }
